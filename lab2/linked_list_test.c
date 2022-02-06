@@ -16,6 +16,14 @@ void test_student_implementation() {
   one_list->prev = NULL;
   one_list->next = NULL;
 
+  // ONE ELEMENT INT LIST
+  int one = 1;
+  node_t* one_int_list = malloc(sizeof(node_t));
+  one_int_list->data = malloc(sizeof(int));
+  memcpy(one_int_list->data, &one, sizeof(int));
+  one_int_list->prev = NULL;
+  one_int_list->next = NULL;
+
   // FOUR ELEMENT LIST
   char* check[] = {"hello", "world", "how", "cool"};
   node_t* four_list = malloc(sizeof(node_t));
@@ -50,9 +58,13 @@ void test_student_implementation() {
   assert(!strcmp(one_list_get, str1));
   assert(!get(one_list, 1));
 
+  int* one_int_list_get = get(one_int_list, 0);
+  assert(*one_int_list_get == one);
+  assert(!get(one_list, 1));
+
   // TEST INSERT FIRST
   // insert to empty list
-  insert_first(&empty_list, "programming");
+  insert_first(&empty_list, "programming", strlen("programming") + 1);
   assert(length_list(empty_list) == 1);
   assert(!strcmp(get_first(empty_list), get_last(empty_list)));
   assert(!empty_list->prev);
@@ -60,13 +72,17 @@ void test_student_implementation() {
 
   // insert to one element list
   // computer -> systems
-  insert_first(&one_list, "computer");
+  insert_first(&one_list, "computer", strlen("computer") + 1);
   assert(!strcmp(get_first(one_list), "computer"));
   assert(!one_list->prev);
   node_t* next_element = one_list->next;
   assert(next_element->prev == one_list);
   assert(!strcmp(next_element->data, "systems"));
   assert(!strcmp(get(one_list, 1), "systems"));
+  // 2 -> 1
+  int two = 2;
+  insert_first(&one_int_list, &two, sizeof(int));
+  assert(* (int*)get_first(one_int_list) == two);
 
   // TEST REMOVE LAST
   char* removed_empty = remove_last(&empty_list);
@@ -87,7 +103,15 @@ void test_student_implementation() {
   assert(!one_list->prev);
   assert(!get(one_list, 1));
   assert(!strcmp(get(one_list, 0), "computer"));
-  remove_element(&one_list, "computer");
+  remove_element(&one_list, "computer", 9);
+
+  void* removed = remove_last(&one_int_list);
+  assert(*(int*)removed == 1);
+  free(removed);
+  removed = remove_first(&one_int_list);
+  assert(*(int*)removed == 2);
+  free(removed);
+  free(one_int_list);
 }
 
 /**
@@ -141,9 +165,10 @@ void test_linked_list() {
   // TEST INSERT LAST AND GET LAST
   // adds the last element to new_list
   // new list would look like: test1 -> test2 -> test3
-  insert_last(&new_list, "test3");
-  char* last_str = get_last(new_list);
-  assert(!strcmp(last_str, "test3"));
+  long el = 401;
+  insert_last(&new_list, &el, sizeof(long));
+  long* last_el = get_last(new_list);
+  assert(*last_el == 401);
 
   // TEST REVERSE
   // empty list
@@ -151,14 +176,14 @@ void test_linked_list() {
   // three element list
   // new list would look like: test3 -> test2 -> test1
   reverse(&new_list);
-  char* new_first_element = get_first(new_list);
-  assert(!strcmp(new_first_element, "test3"));
+  long* new_first_element = get_first(new_list);
+  assert(*new_first_element == 401);
   char* new_last_element = get_last(new_list);
   assert(!strcmp(new_last_element, "test1"));
 
-  remove_element(&new_list, "test1");
-  remove_element(&new_list, "test2");
-  remove_element(&new_list, "test3");
+  remove_element(&new_list, "test1", 6);
+  remove_element(&new_list, "test2", 6);
+  remove_element(&new_list, &el, sizeof(long));
 }
 
 int main(int argc, char** argv) {

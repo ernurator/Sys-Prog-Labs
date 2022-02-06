@@ -1,6 +1,11 @@
+#ifndef LINKED_LIST_H
+#define LINKED_LIST_H
+
+#include <stddef.h>
+
 // struct for a node in a doubly linked list
 typedef struct node {
-  char* data;
+  void* data;
 
   struct node* next;
   struct node* prev;
@@ -8,13 +13,15 @@ typedef struct node {
 
 // function declarations
 int length_list(node_t* head_list);
-char* get_first(node_t* head_list);
-char* get_last(node_t* head_list);
-void insert_first(node_t** head_list, char* to_add);
-void insert_last(node_t** head_list, char* to_add);
-char* get(node_t* head_list, int index);
-int remove_element(node_t** head_list, char* to_remove);
+void* get_first(node_t* head_list);
+void* get_last(node_t* head_list);
+void insert_first(node_t** head_list, void* to_add, size_t size);
+void insert_last(node_t** head_list, void* to_add, size_t size);
+void* get(node_t* head_list, int index);
+int remove_element(node_t **head_list, void *to_remove, size_t size);
 void reverse_helper(node_t** head_list);
 void reverse(node_t** head_list);
-char* remove_first(node_t** head_list);
-char* remove_last(node_t** head_list);
+void* remove_first(node_t** head_list);
+void* remove_last(node_t** head_list);
+
+#endif

@@ -36,13 +36,13 @@ int length_list(node_t* head_list) {
  *
  * given pointer to the head of the list
  */
-char* get_first(node_t* head_list) { return head_list->data; }
+void* get_first(node_t* head_list) { return head_list->data; }
 
 /** returns the value of the last element of the list
  *
  * given a pointer to the head of the list
  */
-char* get_last(node_t* head_list) {
+void* get_last(node_t* head_list) {
   if (!head_list) {
     return NULL;
   }
@@ -56,29 +56,29 @@ char* get_last(node_t* head_list) {
 /** TODO: implement this!
  * inserts element at the beginning of the list
  *
- * given a pointer to the head of the list and char pointer representing the
- * value to be added
+ * given a pointer to the head of the list, a void pointer representing the
+ * value to be added, and the size of the data pointed to
  *
  * returns nothing
  */
-void insert_first(node_t** head_list, char* to_add) { return; }
+void insert_first(node_t** head_list, void* to_add, size_t size) { return; }
 
 /**
  * inserts element at the end of the linked list
  *
- * given a pointer to the head of the list and a char pointer representing the
- * value to be added
+ * given a pointer to the head of the list, a void pointer representing the
+ * value to be added, and the size of the data pointed to
  *
  * returns nothing
  */
-void insert_last(node_t** head_list, char* to_add) {
+void insert_last(node_t** head_list, void* to_add, size_t size) {
   if (!to_add) {
     return;
   }
   node_t* new_element = (node_t*)malloc(sizeof(node_t));
-  char* new_str = (char*)malloc(strlen(to_add));
-  memcpy(new_str, to_add, strlen(to_add));
-  new_element->data = new_str;
+  void* new_data = malloc(size - 1);
+  memcpy(new_data, to_add, size - 1);
+  new_element->data = new_data;
 
   if (!(*head_list)) {  // means the list is empty
     *head_list = new_element;
@@ -105,18 +105,18 @@ void insert_last(node_t** head_list, char* to_add) {
  *
  * returns the string associated with an index into the linked list
  */
-char* get(node_t* head_list, int index) { return NULL; }
+void* get(node_t* head_list, int index) { return NULL; }
 
 /**
  * removes element from linked list
  *
- * given a pointer to the head of list and a char pointer of the node to remove
- * you need to account for if the char pointer doesn't exist in the linked list
+ * given a pointer to the head of list, a void pointer of the node to remove
+ * you need to account for if the void pointer doesn't exist in the linked list
  *
  * returns 1 on success and 0 on failure of removing an element from the linked
  * list
  */
-int remove_element(node_t** head_list, char* to_remove) {
+int remove_element(node_t **head_list, void *to_remove, size_t size) {
   if (!(*head_list)) {
     return 0;  // element doesn't exist
   }
@@ -124,7 +124,7 @@ int remove_element(node_t** head_list, char* to_remove) {
   node_t* curr = *head_list;
 
   while (curr) {
-    if (!strcmp(curr->data, to_remove)) {  // found the element to remove
+    if (!memcmp(curr->data, to_remove, size)) {  // found the element to remove
       if (curr->next) {
         curr->next->prev = curr->prev;
       }
@@ -182,10 +182,10 @@ void reverse(node_t** head_list) {
  *
  * given a pointer to the head of the linked list
  *
- * returns the char pointer of the element removed
+ * returns the void pointer of the element removed
  *
  */
-char* remove_first(node_t** head_list) {
+void* remove_first(node_t** head_list) {
   if (!(*head_list)) {
     return NULL;
   }
@@ -207,7 +207,7 @@ char* remove_first(node_t** head_list) {
  *
  * given a pointer to the head of the linked list
  *
- * returns the char pointer of the element removed
+ * returns the void pointer of the element removed
  *
  */
-char* remove_last(node_t** head_list) { return NULL; }
+void* remove_last(node_t** head_list) { return NULL; }
