@@ -1,0 +1,4 @@
+*_rs
+*_c
+*/target/
+*/*.dSYM
