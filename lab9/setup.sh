@@ -3,6 +3,9 @@
 # update
 sudo apt-get update
 
+# install cmake
+sudo apt install -y cmake
+
 # install grpc
 sudo apt install -y libgrpc++-dev
 
