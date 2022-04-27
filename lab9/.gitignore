@@ -1,0 +1,6 @@
+*.pb.cc
+*.pb.h
+todo_client
+todo_server
+CMakeFiles
+CMakeCache.txt

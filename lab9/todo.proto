@@ -1,0 +1,23 @@
+syntax = "proto3";
+package protos;
+
+// TODO: create an enum named TodoStatus
+// with values NOT_STARTED, IN_PROGRESS, and COMPLETED
+
+// TODO: create a message named TodoItem
+// with a string 'title' field and a TodoStatus 'status' field
+
+// TODO: create a message named TodoList
+// with one field named "items" that is a repeated field of
+// zero or more TodoItems
+
+// TODO: create a TodoResponse message
+// with a boolean 'success' field
+
+message Empty {}
+
+// Create a TodoManager service with the following RPCs:
+// - AddTodo: takes a TodoItem and returns a TodoResponse
+// - EditTodo: takes a TodoItem and returns a TodoResponse
+// - GetTodo: takes an Empty message and returns a TodoList
+
