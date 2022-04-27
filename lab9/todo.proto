@@ -19,5 +19,5 @@ message Empty {}
 // Create a TodoManager service with the following RPCs:
 // - AddTodo: takes a TodoItem and returns a TodoResponse
 // - EditTodo: takes a TodoItem and returns a TodoResponse
-// - GetTodo: takes an Empty message and returns a TodoList
+// - GetTodos: takes an Empty message and returns a TodoList
 
