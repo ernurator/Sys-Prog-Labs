@@ -17,21 +17,22 @@ static int num_incorrect = 0;
 void assert_equal(char** expected, char** actual, const char* message,
                   int len) {
   total_tests++;
-  int element_correct = 0;
   int element_incorrect = 0;
 
   for (int i = 0; i < len; i++) {
-    if (!strcmp(expected[i], actual[i])) {
-      element_correct++;
-      if (element_correct == len) num_correct++;
-    } else {
+    if (strcmp(expected[i], actual[i])) {
       element_incorrect++;
-      if (element_correct == len) num_incorrect++;
       printf(
           "[FAILED Test %d: %s]: At index: %d, expected string: %s, actual "
           "string: %s\n",
           total_tests, message, i, expected[i], actual[i]);
     }
+  }
+
+  if (element_incorrect == 0) {
+    num_correct++;
+  } else {
+    num_incorrect++;
   }
 }
 
@@ -118,19 +119,24 @@ void run_test(void (*func)(), const char* message) {
  * i.e. argv[1] --> number of elements, thus argc - 2 == atoi(argv[1])
  */
 int main(int argc, char** argv) {
-  int num_elements = atoi(argv[1]);
+  if (argc > 1) {
+    int num_elements = atoi(argv[1]);
+    if (argc - 2 != num_elements) {
+      return 1;
+    }
 
-  char* arr[num_elements];
-  for (int i = 0; i < num_elements; i++) {
-    arr[i] = argv[i + 2];
+    char* arr[num_elements];
+    for (int i = 0; i < num_elements; i++) {
+      arr[i] = argv[i + 2];
+    }
+
+    reverse_arr(arr, num_elements);
+
+    for (int i = 0; i < num_elements; i++) {
+      printf("%s ", arr[i]);
+    }
+    printf("\n");
   }
-
-  reverse_arr(arr, num_elements);
-
-  for (int i = 0; i < num_elements; i++) {
-    printf("%s ", arr[i]);
-  }
-  printf("\n");
 
   printf("Testing for correctness...\n");
   // passes the function test_reverse to run_test
