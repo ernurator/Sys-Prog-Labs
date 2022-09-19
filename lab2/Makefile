@@ -1,5 +1,6 @@
 CFLAGS = -Wall -Wextra
 CFLAGS += -g
+CFLAGS += -fsanitize=address
 .PHONY: all clean format
 
 all: linked_list
