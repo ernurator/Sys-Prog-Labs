@@ -1,5 +1,7 @@
 ## Part 1
 
+### Trap 1
+
 Disassembled `trap1` function:
 ```
 000000000000134f <trap1>:
@@ -28,6 +30,8 @@ Enter code to disarm the trap:
 1311
 Trap 1 disarmed! Congratulations! 🎊
 ```
+
+### Trap 2
 
 Disassembled `trap2` function:
 ```
@@ -75,6 +79,8 @@ Enter code to disarm the trap:
 
 ## Part 2
 
+### Overflow 1
+
 By giving an input of length 44, the constant value is changing:
 ```bash
 ernurator@DESKTOP-T1TMEL5:/mnt/c/Users/isenb/projects/sys_prog_labs/Sys-Prog-Labs/lab3/buf$ ./buffer
@@ -90,5 +96,52 @@ ernurator@DESKTOP-T1TMEL5:/mnt/c/Users/isenb/projects/sys_prog_labs/Sys-Prog-Lab
 My favorite number is 12 and it will always be 12 and nothing can change that
 My favorite number is 131 and it will always be 131 and nothing can change that
 Returned to main safe and sound
+```
+
+### Overflow 2
+
+I've compiled and run the program using gdb. I put a breakpoint right after `gets`, and looked onto memory values near $rsp register ($rsp is a pointer to the topmost element in the stack, buf in our case):
+```
+(gdb) x/24wx $rsp
+0x7fffffffe490: 0x41414141      0x41414141      0x41414141      0x41414141
+0x7fffffffe4a0: 0x41414141      0x41414141      0x41414141      0x41414141
+0x7fffffffe4b0: 0xf7fb8f00      0x00007fff      0x004011f0      0x0000000c
+0x7fffffffe4c0: 0xffffe4e0      0x00007fff      0x004011d3      0x00000000
+0x7fffffffe4d0: 0xffffe5d8      0x00007fff      0x00000000      0x00000001
+0x7fffffffe4e0: 0x00000000      0x00000000      0xf7def0b3      0x00007fff
+```
+
+Also, I know that address of the $rip is 0x7fffffffe4c8:
+```
+(gdb) info frame
+Stack level 0, frame at 0x7fffffffe4d0:
+ rip = 0x4011a0 in foo (buffer.c:25); saved rip = 0x401156
+ called by frame at 0x7fffffffe4d8
+ source language c.
+ Arglist at 0x7fffffffe4c0, args:
+ Locals at 0x7fffffffe4c0, Previous frame's sp is 0x7fffffffe4d0
+ Saved registers:
+  rbp at 0x7fffffffe4c0, rip at 0x7fffffffe4c8
+```
+
+Since $rip is located after the buf, we can change its value using buffer overflow. We can change it to the address of first instruction of `hack` function, which is 0x00401156:
+```
+(gdb) disassemble hack
+Dump of assembler code for function hack:
+   0x0000000000401156 <+0>:     push   %rbp
+   0x0000000000401157 <+1>:     mov    %rsp,%rbp
+   0x000000000040115a <+4>:     mov    $0x402008,%edi
+   0x000000000040115f <+9>:     callq  0x401030 <puts@plt>
+   0x0000000000401164 <+14>:    mov    $0x0,%edi
+   0x0000000000401169 <+19>:    callq  0x401060 <exit@plt>
+End of assembler dump.
+```
+
+So the value of buf in exploit will be: 32 any symbols + copy of register values up to $rip + address of the first instruction of `hack` function. After that we get the following result:
+```bash
+ernurator@DESKTOP-T1TMEL5:/mnt/c/Users/isenb/projects/sys_prog_labs/Sys-Prog-Labs/lab3/buf$ ./buffer < exploit2.txt
+My favorite number is 12 and it will always be 12 and nothing can change that
+My favorite number is 12 and it will always be 12 and nothing can change that
+you've been hacked!
 ```
 
