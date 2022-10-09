@@ -1,7 +1,7 @@
 # Exercise 1
-* `w01-byte` bytes/second: <!-- Fill this in -->
-* `w02-byte` bytes/second: <!-- Fill this in -->
-* `w03-byte` bytes/second: <!-- Fill this in -->
+* `w01-byte` bytes/second: 44148
+* `w02-byte` bytes/second: 631220
+* `w03-byte` bytes/second: 1.61031e+07
 
 # Exercise 2
 ### Scenario 1:
