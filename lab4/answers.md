@@ -27,4 +27,14 @@ Explanation: We are pushing the first half of an array to first block on the ver
 
 # Exercise 3
 * Order the functions from fastest to slowest, and explain why each function's ranking makes sense using your understanding of how the cache works. Some functions might have similar runtimes. If this is the case, explain why.
-<!-- Fill this in -->
+
+jki:    n = 1000, 0.847 Gflop/s
+kji:    n = 1000, 0.833 Gflop/s
+kij:    n = 1000, 0.792 Gflop/s
+ikj:    n = 1000, 0.780 Gflop/s
+ijk:    n = 1000, 0.574 Gflop/s
+jik:    n = 1000, 0.567 Gflop/s
+
+The fastest orderings are jk**i** & kj**i**, then ki**j** & ik**j**, and the slowest are ij**k** & ji**k**.
+
+i-inner loop orderings are the fastest, because for arrays A and C we are accessing neighboring elements (C\[i+j\*n\], A\[i+k\*n\]), and for array B we use the same element for each inner loop iteration.
