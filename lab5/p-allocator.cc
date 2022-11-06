@@ -23,7 +23,16 @@ void process_main() {
 
     // Allocate heap pages until (1) hit the stack (out of address space)
     // or (2) allocation fails (out of physical memory).
-    // TODO: Add your code here.
+    uint8_t* current_addr = heap_top;
+    while (current_addr != stack_bottom) {
+        int res = sys_page_alloc(current_addr);
+        if (res < 0) {
+            break;
+        }
+        pid_t* pid_ptr = (pid_t*) current_addr;
+        *pid_ptr = p; 
+        current_addr = current_addr + PAGESIZE;
+    }
 
     // Do nothing forever
     while (true) {

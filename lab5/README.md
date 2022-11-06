@@ -5,8 +5,8 @@ Project 2 - WeensyOS
 Run the project with `make run`. If QEMU's default display causes accessibility problems, run
 `make run-console`.
 
-## Known Bugs 
-<!---
+## Known Bugs
+<!--
 TODO: Fill this out
 -->
 

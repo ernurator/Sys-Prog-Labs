@@ -55,6 +55,24 @@ static void process_setup(pid_t pid, const char* program_name);
 void copy_mappings(x86_64_pagetable* dst, x86_64_pagetable* src);
 void compare_mappings(x86_64_pagetable* dst, x86_64_pagetable* src);
 
+void copy_mappings(x86_64_pagetable* dst, x86_64_pagetable* src) {
+    vmiter src_vmiter = vmiter(src);
+    vmiter dst_vmiter = vmiter(dst);
+
+    for (; src_vmiter.va() < MEMSIZE_VIRTUAL; src_vmiter += PAGESIZE, dst_vmiter += PAGESIZE) {
+        int permissions = src_vmiter.perm();
+        log_printf(
+            "VA %p maps to PA %p with PERMS %p, %p, %p\n",
+            src_vmiter.va(),
+            src_vmiter.pa(),
+            permissions & PTE_P,
+            permissions & PTE_W,
+            permissions & PTE_U
+        );
+        dst_vmiter.map(src_vmiter.pa(), permissions);
+    }
+}
+
 void kernel(const char* command) {
     // Initialize hardware.
     init_hardware();
@@ -83,7 +101,12 @@ void kernel(const char* command) {
         ptable[i].state = P_FREE;
     }
 
-    console_printf("WeensyOS has booted, but there are no processes running!\n");
+    // console_printf("WeensyOS has booted, but there are no processes running!\n");
+    process_setup(1, "allocator");
+    process_setup(2, "allocator2");
+    process_setup(3, "allocator3");
+    process_setup(4, "allocator4");
+    run(&ptable[1]);
     while (true) {
         check_keyboard();
     }
@@ -383,7 +406,7 @@ void run(proc* p) {
 void memshow() {
     static unsigned last_ticks = 0;
     static int showing = 0;
-    static int show_virtual = 0;
+    static int show_virtual = 1;
 
     // switch to a new process every 0.25 sec
     if (last_ticks == 0 || ticks - last_ticks >= HZ / 2) {
