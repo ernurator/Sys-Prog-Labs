@@ -1,4 +1,6 @@
 #include "builtin.h"
+#include <unistd.h>
+#include <sys/wait.h>
 
 using namespace std;
 
@@ -49,6 +51,12 @@ void do_fork(char* args[]) {
    * 1) fork into a child process to execute the function
    * 2) Outside of the child process, wait for the new process to finish
    */
+  pid_t child;
+  if ((child = fork()) == 0) {
+    execv(args[0], args);
+  }
+  int status;
+  waitpid(child, &status, 0);
 }
 
 /*
