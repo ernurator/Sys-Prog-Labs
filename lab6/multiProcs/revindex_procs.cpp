@@ -1,7 +1,9 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
+
 #include <cstring>
+
 #include "wordindex.h"
 
 using namespace std;
@@ -76,7 +78,7 @@ void process_file(string term, string filename, int* cpipe) {
   wordindex file_wi;
   file_wi.filename = filename;
   find_word(&file_wi, term);
-  
+
   string serialized_wi = serialize_word_index(&file_wi);
   write(cpipe[1], serialized_wi.c_str(), serialized_wi.length());
 
@@ -100,7 +102,8 @@ void read_process_results(wordindex* ind, int* ppipe) {
   char buf[SERIALIZED_WORD_INDEX_MAX_SIZE];
   int loc = 0;
   close(ppipe[1]);
-  while (loc < SERIALIZED_WORD_INDEX_MAX_SIZE && read(ppipe[0], &buf[loc], 1) > 0) {  // TODO: read not by 1 byte
+  while (loc < SERIALIZED_WORD_INDEX_MAX_SIZE &&
+         read(ppipe[0], &buf[loc], 1) > 0) {  // TODO: read not by 1 byte
     loc++;
   }
   if (loc == SERIALIZED_WORD_INDEX_MAX_SIZE) {
