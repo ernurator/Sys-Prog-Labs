@@ -35,8 +35,8 @@ int num_tokens(char* input_buf, string delim) {
   return tokens;
 }
 
-/* TODO
- * Fill in this function to execute the not builtin commands (everything other
+/*
+ * Executes the not builtin commands (everything other
  * than cd, ln, rm, exit)
  * Arguments:
  *      - args: a null terminated  array of strings containing all tokens from
@@ -54,9 +54,12 @@ void do_fork(char* args[]) {
   pid_t child;
   if ((child = fork()) == 0) {
     execv(args[0], args);
+    perror("execv");
+    exit(1);
+  } else {
+    int status;
+    waitpid(child, &status, 0);
   }
-  int status;
-  waitpid(child, &status, 0);
 }
 
 /*
