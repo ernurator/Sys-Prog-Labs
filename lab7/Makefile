@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -Wall -Wextra -Wpedantic -fsanitize=address
+CXXFLAGS = -g -Wall -Wextra -Wpedantic -fsanitize=address -std=c++11
 
 EXECS = revindex_sequential revindex_threads
 
@@ -13,11 +13,11 @@ books:
 format:
 	clang-format -style=Google -i revindex_threads.cpp
 
-revindex_sequential: books revindex_sequential.cpp wordindex.h
-	$(CXX) $(CXXFLAGS) -o $@ $(filter-out $<,$^)
+revindex_sequential: revindex_sequential.cpp wordindex.h books
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
-revindex_threads: books revindex_threads.cpp wordindex.h
-	$(CXX) $(CXXFLAGS) -o $@ $(filter-out $<,$^)
+revindex_threads: revindex_threads.cpp wordindex.h books
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
 check: revindex_sequential revindex_threads books
 	./revindex_sequential books < input.txt > output_sequential.txt
@@ -27,4 +27,4 @@ check: revindex_sequential revindex_threads books
 clean:
 	rm -f $(EXECS)
 
-.PHONY: all check clean
+.PHONY: all check clean format

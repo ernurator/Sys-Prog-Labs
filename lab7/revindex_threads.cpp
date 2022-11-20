@@ -1,9 +1,11 @@
 #include <thread>
+#include <vector>
+
 #include "wordindex.h"
 
 using namespace std;
 
-/*TODO
+/*
  * Fill in this function so that it creates a series of threads to execute
  * find_word over different files in parallel.
  *
@@ -26,12 +28,23 @@ int run_workers(vector<wordindex>& files, vector<string> filenames,
   // 1) create a new index object for the file being processes by the thread and
   //    add it to the files vector
   // 2) create the thread to run find_word with the proper arguments
+  int total_sum = 0;
+  vector<thread> threads;
+  for (int i = 0; i < num_threads; ++i) {
+    files.push_back(wordindex());
+    files[start_pos + i].filename = filenames[start_pos + i];
+    threads.push_back(thread(find_word, &files[start_pos + i], word));
+  }
 
   // join with each thread and add the count field of each index to the total
   // sum
+  for (int i = 0; i < num_threads; ++i) {
+    threads[i].join();
+    total_sum += files[start_pos + i].count;
+  }
 
   // return the total sum for this batch of files
-  return 0;
+  return total_sum;
 }
 
 /* The main REPL for the program
