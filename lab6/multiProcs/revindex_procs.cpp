@@ -6,6 +6,8 @@
 
 using namespace std;
 
+const int SERIALIZED_WORD_INDEX_MAX_SIZE = 1024 * 1024;
+
 /* Helper function to convert data found in a wordindex object into a single
  * string that can be written to a pipe all at once.
  * Writes the data in the following order with the index and the phrase
@@ -55,7 +57,7 @@ void deserialize_word_index(wordindex* ind, char* buffer) {
   }
 }
 
-/*TODO
+/*
  * In this function, you should:
  * 1) create a wordindex object and fill it in using find_word
  * 2) write the data now contained in the wordindex object to
@@ -70,9 +72,19 @@ void deserialize_word_index(wordindex* ind, char* buffer) {
  *            an int* representing the pipe for this process, cpipe
  * Return value: none
  */
-void process_file(string term, string filename, int* cpipe) {}
+void process_file(string term, string filename, int* cpipe) {
+  wordindex file_wi;
+  file_wi.filename = filename;
+  find_word(&file_wi, term);
+  
+  string serialized_wi = serialize_word_index(&file_wi);
+  write(cpipe[1], serialized_wi.c_str(), serialized_wi.length());
 
-/*TODO
+  close(cpipe[0]);
+  close(cpipe[1]);
+}
+
+/*
  * In this function, you should:
  * 1) read the wordindex data the child process has sent through
  *    the pipe (HINT: after reading the data, use the
@@ -84,9 +96,25 @@ void process_file(string term, string filename, int* cpipe) {}
  *            an int* representing the pipe for this process, ppipe
  * Return value: none
  */
-void read_process_results(wordindex* ind, int* ppipe) {}
+void read_process_results(wordindex* ind, int* ppipe) {
+  char buf[SERIALIZED_WORD_INDEX_MAX_SIZE];
+  int loc = 0;
+  close(ppipe[1]);
+  while (loc < SERIALIZED_WORD_INDEX_MAX_SIZE && read(ppipe[0], &buf[loc], 1) > 0) {  // TODO: read not by 1 byte
+    loc++;
+  }
+  if (loc == SERIALIZED_WORD_INDEX_MAX_SIZE) {
+    perror("read_process_results tries to read too long string");
+    exit(1);
+  }
+  close(ppipe[0]);
+  buf[loc] = '\0';
 
-/*TODO
+  deserialize_word_index(ind, buf);
+  ind->count = ind->indexes.size();
+}
+
+/*
  * Complete this function following the comments
  *
  * Arguments: the word to search for, term
@@ -121,6 +149,18 @@ int process_input(string term, vector<string>& filenames, int** pipes,
      * 2) fork into a child process which runs the process_file function
      * 3) in the parent process, add the child's pid to the array of pids
      */
+    for (int i = 0; i < num_procs; ++i) {
+      if (pipe(pipes[i]) == -1) {
+        perror("pipe");
+        exit(1);
+      }
+      if ((pid = fork()) == 0) {
+        process_file(term, filenames[completed + i], pipes[i]);
+        exit(0);
+      } else {
+        pids[i] = pid;
+      }
+    }
 
     /* Read from each pipe
      * For each processes you should do the following:
@@ -132,6 +172,24 @@ int process_input(string term, vector<string>& filenames, int** pipes,
      * 4) update the total number of ocurrences accordingly
      */
 
+    for (int i = 0; i < num_procs; ++i) {
+      int status;
+      if (waitpid(pids[i], &status, 0) == -1) {
+        perror("waitpid");
+        exit(1);
+      }
+      if (status != 0) {
+        perror("child pid status is non-zero");
+        exit(1);
+      }
+
+      wordindex wi;
+      wi.filename = filenames[completed + i];
+      read_process_results(&wi, pipes[i]);
+
+      fls.push_back(wi);
+      num_occurrences += wi.count;
+    }
     // Make sure each process created in this round has completed
 
     completed += num_procs;

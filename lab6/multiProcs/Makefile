@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -Wall -Wextra -Wpedantic -fsanitize=address
+CXXFLAGS = -g -Wall -Wextra -Wpedantic -fsanitize=address -std=c++11
 
 EXECS = revindex_sequential revindex_parallel
 
@@ -13,10 +13,10 @@ books:
 format:
 	clang-format -style=Google -i revindex_procs.cpp
 
-revindex_sequential: books revindex_sequential.cpp wordindex.h
+revindex_sequential: books revindex_sequential.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $(filter-out $<,$^)
 
-revindex_parallel: books revindex_procs.cpp wordindex.h
+revindex_parallel: books revindex_procs.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $(filter-out $<,$^)
 
 check: revindex_sequential revindex_parallel books
